@@ -11,7 +11,16 @@ import java.sql.*;
 
 @WebServlet(urlPatterns = "/item")
 public class ItemServletAPI extends HttpServlet {
+    private JsonObject addJSONObject(String message, String state) {
 
+        JsonObjectBuilder objectBuilder = Json.createObjectBuilder();
+        objectBuilder.add("state", state);
+        objectBuilder.add("message", message);
+        objectBuilder.add("data", "[]");
+
+
+        return objectBuilder.build();
+    }
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         try {
@@ -57,7 +66,8 @@ public class ItemServletAPI extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        //resp.addHeader("Content-type", "application/json");
+
+
         resp.addHeader("Access-Control-Allow-Origin", "*");
         resp.addHeader("Access-Control-Allow-Methods", "GET,POST,DELETE,PUT");
         resp.addHeader("Access-Control-Allow-Headers", "Content-Type");
@@ -66,8 +76,7 @@ public class ItemServletAPI extends HttpServlet {
         String itemName = req.getParameter("description");
         String qty = req.getParameter("qty");
         String unitPrice = req.getParameter("unitPrice");
-        String option = req.getParameter("option");
-//
+
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
             Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/test", "root", "1234");
@@ -93,13 +102,13 @@ public class ItemServletAPI extends HttpServlet {
 
     @Override
     protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        //resp.addHeader("Content-type", "application/json");
+
         resp.addHeader("Access-Control-Allow-Origin", "*");
         resp.addHeader("Access-Control-Allow-Methods", "GET,POST,DELETE,PUT");
         resp.addHeader("Access-Control-Allow-Headers", "Content-Type");
 
         String code = req.getParameter("itemID");
-        System.out.println("delete"+code);
+
 
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
@@ -124,7 +133,7 @@ public class ItemServletAPI extends HttpServlet {
 
     @Override
     protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        //resp.addHeader("Content-type", "application/json");
+
         resp.addHeader("Access-Control-Allow-Origin", "*");
         resp.addHeader("Access-Control-Allow-Methods", "GET,POST,DELETE,PUT");
         resp.addHeader("Access-Control-Allow-Headers", "Content-Type");
@@ -166,20 +175,11 @@ public class ItemServletAPI extends HttpServlet {
 
     }
 
-    private JsonObject addJSONObject(String message, String state) {
 
-        JsonObjectBuilder objectBuilder = Json.createObjectBuilder();
-        objectBuilder.add("state", state);
-        objectBuilder.add("message", message);
-        objectBuilder.add("data", "[]");
-
-
-        return objectBuilder.build();
-    }
 
     @Override
     protected void doOptions(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        //resp.addHeader("Content-type", "application/json");
+
         resp.addHeader("Access-Control-Allow-Origin", "*");
         resp.addHeader("Access-Control-Allow-Methods", "GET,POST,DELETE,PUT");
         resp.addHeader("Access-Control-Allow-Headers", "Content-Type");

@@ -11,6 +11,16 @@ import java.sql.*;
 
 @WebServlet(urlPatterns = {"/customer"})
 public class CustomerServletAPI extends HttpServlet {
+    private JsonObject addJSONObject(String message, String state) {
+
+        JsonObjectBuilder objectBuilder = Json.createObjectBuilder();
+        objectBuilder.add("state", state);
+        objectBuilder.add("message", message);
+        objectBuilder.add("data", "[]");
+
+
+        return objectBuilder.build();
+    }
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -20,7 +30,7 @@ public class CustomerServletAPI extends HttpServlet {
             Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/test", "root", "1234");
             PreparedStatement pstm = connection.prepareStatement("SELECT * FROM Customer");
             ResultSet rst = pstm.executeQuery();
-            String option = req.getParameter("option");
+
 
             resp.setContentType("application/json");
             resp.addHeader("Access-Control-Allow-Origin", "*");
@@ -118,7 +128,7 @@ public class CustomerServletAPI extends HttpServlet {
         String cusSalary = customerOB.getString("salary");
 
 
-        System.out.println(cusID + " - " + cusName+ " - " + cusAddress+ " - " +cusSalary);
+
         try {
 
             Class.forName("com.mysql.cj.jdbc.Driver");
@@ -149,7 +159,7 @@ public class CustomerServletAPI extends HttpServlet {
     @Override
     protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String cusID = req.getParameter("cusID");
-        System.out.println(cusID);
+
         resp.addHeader("Content-type", "application/json");
         resp.addHeader("Access-Control-Allow-Origin", "*");
         resp.addHeader("Access-Control-Allow-Methods", "GET,POST,DELETE,PUT");
@@ -180,16 +190,6 @@ public class CustomerServletAPI extends HttpServlet {
     }
 
 
-    private JsonObject addJSONObject(String message, String state) {
-
-        JsonObjectBuilder objectBuilder = Json.createObjectBuilder();
-        objectBuilder.add("state", state);
-        objectBuilder.add("message", message);
-        objectBuilder.add("data", "[]");
-
-
-        return objectBuilder.build();
-    }
 
     @Override
     protected void doOptions(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {

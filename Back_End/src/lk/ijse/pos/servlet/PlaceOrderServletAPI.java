@@ -11,7 +11,16 @@ import java.sql.*;
 
 @WebServlet(urlPatterns = "/placeOrder")
 public class PlaceOrderServletAPI extends HttpServlet {
+    private JsonObject addJSONObject(String message, String state) {
 
+        JsonObjectBuilder objectBuilder = Json.createObjectBuilder();
+        objectBuilder.add("state", state);
+        objectBuilder.add("message", message);
+        objectBuilder.add("data", "[]");
+
+
+        return objectBuilder.build();
+    }
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         resp.addHeader("Content-type", "application/json");
@@ -101,7 +110,7 @@ public class PlaceOrderServletAPI extends HttpServlet {
                 objectBuilder.add("address", address);
                 objectBuilder.add("contact", contact);
 
-                System.out.println(id + " " + name + " " + address + " " + contact);
+
 
             }
 
@@ -124,9 +133,7 @@ public class PlaceOrderServletAPI extends HttpServlet {
             pstm.setObject(1, customerId);
             ResultSet rst = pstm.executeQuery();
 
-            /*connection.setAutoCommit(false);
-            connection.commit();
-            connection.setAutoCommit(true);*/
+
 
             JsonObjectBuilder objectBuilder = Json.createObjectBuilder();
             if (rst.next()) {
@@ -170,17 +177,10 @@ public class PlaceOrderServletAPI extends HttpServlet {
 
         JsonArray details = readObject.getJsonArray("details");
 
-        for (JsonValue item : details) {
 
-            System.out.println(item.asJsonObject().getString("id"));
-            System.out.println(item.asJsonObject().getString("desc"));
-            System.out.println(item.asJsonObject().getString("qty"));
-            System.out.println(item.asJsonObject().getString("up"));
-
-        }
 
         try {
-            //resp.getWriter().print(placeOrder(orderID,date,amount,customerID,details));
+
 
             Class.forName("com.mysql.cj.jdbc.Driver");
             Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/test", "root", "1234");
@@ -196,19 +196,18 @@ public class PlaceOrderServletAPI extends HttpServlet {
 
                 if (pstm.executeUpdate() > 0) {
 
-                    int i=0;
+                    int j=0;
                     for (JsonValue item : details) {
-                        PreparedStatement pstm2 = connection.prepareStatement("insert into ordersdetails values(?,?,?,?)");
-                        pstm2.setObject(1, orderID);
-                        pstm2.setObject(2, item.asJsonObject().getString("id"));
-                        pstm2.setObject(3, item.asJsonObject().getString("qty"));
-                        pstm2.setObject(4, item.asJsonObject().getString("up"));
+                        PreparedStatement pstm1 = connection.prepareStatement("insert into ordersdetails values(?,?,?,?)");
+                        pstm1.setObject(1, orderID);
+                        pstm1.setObject(2, item.asJsonObject().getString("id"));
+                        pstm1.setObject(3, item.asJsonObject().getString("qty"));
+                        pstm1.setObject(4, item.asJsonObject().getString("up"));
 
-                        System.out.println(details.size());
 
-                        if (pstm2.executeUpdate() > 0) {
-                            i++;
-                            if (i==details.size()){
+                        if (pstm1.executeUpdate() > 0) {
+                            j++;
+                            if (j==details.size()){
                                 connection.commit();
                                 resp.getWriter().print(addJSONObject("Added", "ok"));
                             }
@@ -219,7 +218,7 @@ public class PlaceOrderServletAPI extends HttpServlet {
 
                 connection.rollback();
                 resp.getWriter().print(addJSONObject("Order couldn't Placed !", "error"));
-                //return addJSONObject("Order couldn't Placed !", "error");
+
             } finally {
                 connection.setAutoCommit(true);
             }
@@ -278,14 +277,5 @@ public class PlaceOrderServletAPI extends HttpServlet {
         resp.addHeader("Access-Control-Allow-Headers", "Content-Type");
     }
 
-    private JsonObject addJSONObject(String message, String state) {
 
-        JsonObjectBuilder objectBuilder = Json.createObjectBuilder();
-        objectBuilder.add("state", state);
-        objectBuilder.add("message", message);
-        objectBuilder.add("data", "[]");
-
-
-        return objectBuilder.build();
-    }
 }
