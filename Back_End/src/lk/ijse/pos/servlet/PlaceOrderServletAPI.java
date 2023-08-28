@@ -47,7 +47,7 @@ public class PlaceOrderServletAPI extends HttpServlet {
                 try {
                     Class.forName("com.mysql.cj.jdbc.Driver");
                     Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/test", "root", "1234");
-                    PreparedStatement pstm = connection.prepareStatement("select orders.orderID,orders.date,c.name ,orders.total  from orders join customerinfo c on c.cusID = orders.customerID");
+                    PreparedStatement pstm = connection.prepareStatement("select orders.orderID,orders.date,c.cusName ,orders.amount  from orders join customer c on c.cusID = orders.customerID");
                     ResultSet rst = pstm.executeQuery();
 
                     JsonArrayBuilder allOrders = Json.createArrayBuilder();
@@ -129,7 +129,7 @@ public class PlaceOrderServletAPI extends HttpServlet {
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
             Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/webpos?allowPublicKeyRetrieval=true&useSSL=false", "root", "1234");
-            PreparedStatement pstm = connection.prepareStatement("select * from Item where itemID=?");
+            PreparedStatement pstm = connection.prepareStatement("select * from Item where id=?");
             pstm.setObject(1, customerId);
             ResultSet rst = pstm.executeQuery();
 
@@ -248,10 +248,10 @@ public class PlaceOrderServletAPI extends HttpServlet {
             Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/webpos?allowPublicKeyRetrieval=true&useSSL=false", "root", "1234");
 
             for (JsonValue item : jsonValues) {
-                PreparedStatement pstm = connection.prepareStatement("insert into ordersdetails values(?,?,?,?)");
+                PreparedStatement pstm = connection.prepareStatement("update Item set address = item.address - ? where id=?");
+                //PreparedStatement pstm3 = connection.prepareStatement("update iteminfo set itemDesc=?,itemQty=?,unitPrice=? where itemID=?");
                 pstm.setObject(2, item.asJsonObject().getString("id"));
-                pstm.setObject(3, item.asJsonObject().getString("qty"));
-                pstm.setObject(4, item.asJsonObject().getString("up"));
+                pstm.setObject(1, item.asJsonObject().getString("qty"));
 
                 if (pstm.executeUpdate() > 0) {
                     resp.getWriter().print(addJSONObject("item Updated", "ok"));

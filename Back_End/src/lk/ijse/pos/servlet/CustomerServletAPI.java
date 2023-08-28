@@ -134,7 +134,7 @@ public class CustomerServletAPI extends HttpServlet {
             Class.forName("com.mysql.cj.jdbc.Driver");
             Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/test", "root", "1234");
 
-            PreparedStatement pstm3 = connection.prepareStatement("update Customer set name=?,address=?,contact=? where cusID=?");
+            PreparedStatement pstm3 = connection.prepareStatement("update Customer set cusName=?,cusAddress=?,cusContact=? where cusID=?");
             pstm3.setObject(4, cusID);
             pstm3.setObject(1, cusName);
             pstm3.setObject(2, cusAddress);
